@@ -13,13 +13,12 @@ pub fn run() {
             elves.push(0);
         }
     }
-    let max1 = elves.iter().max().expect("Expected at least one value.");
-    let max2 = elves.iter().filter(|x| *x != max1).max().expect("Expected at least two values.");
-    let max3 = elves.iter().filter(|x| *x != max1 && *x != max2).max().expect("Expected at least three values.");
+    elves.sort();
+    let maxes = elves.into_iter().rev().take(3).collect::<Vec<i32>>();
 
     // Task 1
-    println!("{}", max1);
+    println!("{}", maxes[0]);
     // Task 2
-    println!("{}", max1+max2+max3);
+    println!("{}", maxes.iter().sum::<i32>());
     
 }
