@@ -18,12 +18,12 @@ fn get_score(a: u32, b: u32) -> u32 {
 }
 
 /// Get the desired move based on the required outcome (b).
-fn get_move(a: u32, b: u32) -> u32 {
+fn get_move(a: u32, b: u32) -> Option<u32> {
     match b {
-        1 => if a-1 == 0 {3} else {a-1},
-        2 => a,
-        3 => if a+1 > 3 {1} else {a+1},
-        _ => panic!("Invalid score in pattern.")
+        1 => if a-1 == 0 {Some(3)} else {Some(a-1)},
+        2 => Some(a),
+        3 => if a+1 > 3 {Some(1)} else {Some(a+1)},
+        _ => None
     }
 }
 
@@ -37,7 +37,7 @@ pub fn run() {
         let a = to_score(moves[0]); let b = to_score(moves[1]);
 
         score += get_score(a, b);
-        score_alt += get_score(a, get_move(a, b));
+        score_alt += get_score(a, get_move(a, b).unwrap());
     }
     println!("{score} {score_alt}");
 }
