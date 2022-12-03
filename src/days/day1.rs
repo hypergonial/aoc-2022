@@ -7,9 +7,8 @@ pub fn run() {
     for line in lines.split("\n") {
         if line != "" {
             let len = elves.len();
-            elves[len-1] += line.parse::<i32>().expect("You better be an integer");
-        }
-        else {
+            elves[len - 1] += line.parse::<i32>().expect("You better be an integer");
+        } else {
             elves.push(0);
         }
     }
@@ -20,5 +19,4 @@ pub fn run() {
     println!("{}", maxes[0]);
     // Task 2
     println!("{}", maxes.iter().sum::<i32>());
-    
 }

@@ -19,11 +19,15 @@ pub fn run() {
     let mut badge_scores: Vec<u32> = Vec::new();
 
     for line in &lines {
-        let (first, second) = line.split_at(line.len()/2);
+        let (first, second) = line.split_at(line.len() / 2);
         push_score(&[first, second], &mut scores);
     }
     for chunk in lines.chunks(3) {
         push_score(chunk, &mut badge_scores);
     }
-    println!("{} {}", scores.iter().sum::<u32>(), badge_scores.iter().sum::<u32>());   
+    println!(
+        "{} {}",
+        scores.iter().sum::<u32>(),
+        badge_scores.iter().sum::<u32>()
+    );
 }
