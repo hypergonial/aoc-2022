@@ -1,22 +1,11 @@
-use std::collections::HashMap;
 use std::fs;
 
-use lazy_static::lazy_static;
+const ABC: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-lazy_static!{
-    static ref SCORE_MAPPING: HashMap<char, u32> = {
-        let mut map = HashMap::new();
-        for (char, score) in ('a'..='z').zip(1..).chain(('A'..='Z').zip(27..)) {
-            map.insert(char, score);
-        }
-        map
-    };
-}
-
-fn push_common_occurences(text: &[&str], scores: &mut Vec<u32>) {
-    for char in SCORE_MAPPING.keys() {
-        if text.iter().all(|x| x.contains(*char)) {
-            let score = SCORE_MAPPING.get(char).expect("Invalid character found!").to_owned();
+fn push_score(text: &[&str], scores: &mut Vec<u32>) {
+    for char in ABC.chars() {
+        if text.iter().all(|x| x.contains(char)) {
+            let score = ABC.find(char).expect("Invalid character found!") as u32 + 1;
             scores.push(score);
         }
     }
@@ -31,10 +20,10 @@ pub fn run() {
 
     for line in &lines {
         let (first, second) = line.split_at(line.len()/2);
-        push_common_occurences(&[first, second], &mut scores);
+        push_score(&[first, second], &mut scores);
     }
     for chunk in lines.chunks(3) {
-        push_common_occurences(chunk, &mut badge_scores);
+        push_score(chunk, &mut badge_scores);
     }
     println!("{} {}", scores.iter().sum::<u32>(), badge_scores.iter().sum::<u32>());   
 }
