@@ -1,6 +1,8 @@
+#![allow(dead_code)]
+
 mod days;
 mod utils;
 
 fn main() {
-    days::day2::run();
+    days::day3::run();
 }
