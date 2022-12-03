@@ -14,9 +14,9 @@ lazy_static!{
 }
 
 fn push_common_occurences(text: &[&str], scores: &mut Vec<u32>) {
-    for char in ('a'..='z').chain('A'..='Z') {
-        if text.iter().all(|x| x.contains(char)) {
-            let score = SCORE_MAPPING.get(&char).expect("Invalid character found!").to_owned();
+    for char in SCORE_MAPPING.keys() {
+        if text.iter().all(|x| x.contains(*char)) {
+            let score = SCORE_MAPPING.get(char).expect("Invalid character found!").to_owned();
             scores.push(score);
         }
     }
