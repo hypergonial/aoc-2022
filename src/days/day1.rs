@@ -4,8 +4,8 @@ pub fn run() {
     let lines = fs::read_to_string("input/day1in.txt").expect("Where file");
     let mut elves: Vec<i32> = vec![0];
 
-    for line in lines.split("\n") {
-        if line != "" {
+    for line in lines.split('\n') {
+        if !line.is_empty() {
             let len = elves.len();
             elves[len - 1] += line.parse::<i32>().expect("You better be an integer");
         } else {

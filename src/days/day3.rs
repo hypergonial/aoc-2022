@@ -13,7 +13,7 @@ fn push_score(text: &[&str], scores: &mut Vec<u32>) {
 
 pub fn run() {
     let file = fs::read_to_string("input/day3in.txt").expect("Failed to read file!");
-    let lines = file.split("\n").collect::<Vec<&str>>();
+    let lines = file.split('\n').collect::<Vec<&str>>();
 
     let mut scores: Vec<u32> = Vec::new();
     let mut badge_scores: Vec<u32> = Vec::new();

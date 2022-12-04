@@ -36,8 +36,8 @@ pub fn run() {
     let mut score = 0;
     let mut score_alt = 0;
 
-    for line in lines.split("\n") {
-        let moves = line.split(" ").take(2).collect::<Vec<&str>>();
+    for line in lines.split('\n') {
+        let moves = line.split(' ').take(2).collect::<Vec<&str>>();
         let a = to_score(moves[0]);
         let b = to_score(moves[1]);
 
