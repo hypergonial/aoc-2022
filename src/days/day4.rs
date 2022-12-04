@@ -1,17 +1,11 @@
 use std::fs;
 
 fn contains_all((a, b): (u32, u32), (c, d): (u32, u32)) -> bool {
-    if (a..=b).all(|x| (c..=d).contains(&x)) || (c..=d).all(|x| (a..=b).contains(&x)) {
-        return true
-    }
-    false
+    (a..=b).all(|x| (c..=d).contains(&x)) || (c..=d).all(|x| (a..=b).contains(&x))
 }
 
 fn contains_any((a, b): (u32, u32), (c, d): (u32, u32)) -> bool {
-    if (a..=b).any(|x| (c..=d).contains(&x)) || (c..=d).any(|x| (a..=b).contains(&x)) {
-        return true
-    }
-    false
+    (a..=b).any(|x| (c..=d).contains(&x)) || (c..=d).any(|x| (a..=b).contains(&x))
 }
 
 pub fn run() {
