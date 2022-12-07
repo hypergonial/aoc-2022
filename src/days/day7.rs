@@ -10,7 +10,6 @@ enum FSObject {
 #[derive(Debug)]
 struct DirectoryData {
     name: String,
-    // stored to provide a unique key to each dir in the HashMap
     path: String,
     contents: Vec<FSObject>
 }
@@ -37,7 +36,9 @@ impl DirectoryData {
                 FSObject::PartialDirectory(_) => panic!("Trying to calculate size of partial directory record!"),
             }
         }
-        map.insert(self.path.clone(), dir_size);
+        if map.insert(self.path.clone(), dir_size).is_some() {
+            panic!("Multiple directories on same path!");
+        }
     }
 }
 
