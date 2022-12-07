@@ -26,7 +26,7 @@ impl DirectoryData {
         }
         dir_size
     }
-
+    // TODO: Could probably deduplicate code here
     fn gather_sizes(&self, map: &mut HashMap<String, usize>) {
         let mut dir_size = 0;
         for item in self.contents.iter() {
@@ -95,7 +95,7 @@ fn navigate_to_dir<'a>(root: &'a mut DirectoryData, path: &[&str]) -> &'a mut Di
 }
 
 /// Find a directory from root, and replace a given partial entry with a directory.
-/// Mutates 'root' to fill in the missing directory data at 'path'.
+/// Mutates 'root' to fill in the missing directory data at 'path' with 'data'.
 fn replace_partial_dir(root: &mut DirectoryData, path: &[&str], data: DirectoryData) {
     let dir = navigate_to_dir(root, path);
 
@@ -139,6 +139,7 @@ pub fn run() {
             }
         }
         // Read data until next command into a new Directory
+        // Here, directories under this dir are added as PartialDirectory
         else if l == "$ ls" {
             let data = DirectoryData {
                 name: path.last().unwrap().to_string(),
