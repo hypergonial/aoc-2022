@@ -4,7 +4,7 @@ use std::{fs, collections::HashMap};
 enum FSObject {
     File(FileData),
     Directory(DirectoryData),
-    PartialDirectory(String),
+    PartialDirectory{name: String},
 }
 
 #[derive(Debug)]
@@ -21,7 +21,7 @@ impl DirectoryData {
             match item {
                 FSObject::File(file) => dir_size += file.size,
                 FSObject::Directory(dir) => dir_size += dir.size(),
-                FSObject::PartialDirectory(_) => panic!("Trying to calculate size of partial directory record!"),
+                _partial => panic!("Trying to calculate size of partial directory record!"),
             }
         }
         dir_size
@@ -33,7 +33,7 @@ impl DirectoryData {
             match item {
                 FSObject::File(file) => dir_size += file.size,
                 FSObject::Directory(dir) => {dir.gather_sizes(map); dir_size += dir.size()},
-                FSObject::PartialDirectory(_) => panic!("Trying to calculate size of partial directory record!"),
+                _partial => panic!("Trying to calculate size of partial directory record!"),
             }
         }
         if map.insert(self.path.clone(), dir_size).is_some() {
@@ -55,7 +55,7 @@ fn read_dir_contents(lines: &[&str]) -> Vec<FSObject> {
 
     for line in lines {
         if line.starts_with("dir ") {
-            contents.push(FSObject::PartialDirectory(line.split(' ').skip(1).take(1).collect()));
+            contents.push(FSObject::PartialDirectory{name: line.split(' ').skip(1).take(1).collect()});
         }
         else {
             let x = line.split(' ').collect::<Vec<&str>>();
@@ -102,7 +102,7 @@ fn replace_partial_dir(root: &mut DirectoryData, path: &[&str], data: DirectoryD
     let mut index = None;
 
     for (i, e) in dir.contents.iter().enumerate() {
-        if let FSObject::PartialDirectory(name) = e {
+        if let FSObject::PartialDirectory{ name } = e {
             if name == &data.name {
                 index = Some(i);
                 break
