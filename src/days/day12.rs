@@ -96,7 +96,7 @@ pub fn run() {
     let starts = map.iter_mut().filter(|c| c.height == 0).map(|c| *c).collect::<Vec<Coordinate>>();
 
     // Use rayon for multithreading performance gains
-    // Roughly takes ~20 seconds to execute
+    // Roughly takes ~20 seconds to execute in debug mode, ~2 seconds in release
     let shortest = starts.par_iter().map(|s| {
         let mut c = *s;
         c.distance_from_start = Some(0);
