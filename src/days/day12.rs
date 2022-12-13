@@ -1,17 +1,35 @@
-use std::fs;
+use std::{fs, collections::VecDeque, hash::Hash};
+use rayon::prelude::*;
 
 const ABC: &str = "abcdefghijklmnopqrstuvwxyz";
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default)]
+#[derive(Debug, Clone, Copy, PartialOrd, Ord, Default)]
 struct Coordinate {
     x: isize,
     y: isize,
-    height: usize,
+    height: isize,
+    distance_from_start: Option<isize>,
+    visited: bool,
 }
 
+impl Hash for Coordinate {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.x.hash(state);
+        self.y.hash(state);
+        self.height.hash(state);
+    }
+}
+
+impl PartialEq for Coordinate {
+    fn eq(&self, other: &Self) -> bool {
+        self.x == other.x && self.y == other.y && self.height == other.height
+    }
+}
+impl Eq for Coordinate {}
+
 impl Coordinate {
-    fn new(x: isize, y: isize, height: usize) -> Self {
-        Coordinate { x, y, height }
+    fn new(x: isize, y: isize, height: isize) -> Self {
+        Coordinate { x, y, height, distance_from_start: None, visited: false }
     }
 
     #[inline]
@@ -20,47 +38,71 @@ impl Coordinate {
         (self.x-other.x).abs()+(self.y-other.y).abs()
     }
 
-    fn get_path_length(&self, finish: &Coordinate, map: Vec<Vec<Coordinate>>) -> isize {
-        
-        unimplemented!()
+    /// https://en.wikipedia.org/wiki/Breadth-first_search
+    fn get_path_length(&mut self, dest: &Coordinate, mut map: Vec<Coordinate>) -> Option<isize> {
+        let mut queue: VecDeque<Coordinate> = VecDeque::new();
+        self.visited = true;
+        queue.push_front(*self);
+
+        while let Some(coord) = queue.pop_front() {
+            if &coord == dest {
+                return coord.distance_from_start;
+            }
+
+            for mut neighbour in coord.get_neighbouring(&mut map) {
+                neighbour.visited = true;
+                neighbour.distance_from_start = Some(coord.distance_from_start.unwrap()+1);
+                queue.push_back(*neighbour);
+            }
+        }
+        None
     }
 
     /// Get neighbouring valid coordinates, filters out coordinates that are invalid for path.
-    fn get_neighbouring<'a>(&self, map: &'a Vec<Vec<Coordinate>>) -> Vec<&'a Coordinate> {
-        map.iter().map(|l| l.iter().filter(|c| {
-            (self.x-c.x).abs().max((self.y-c.y).abs()) <= 1 && c.height - self.height <= 1
-        })).flatten().collect::<Vec<&Coordinate>>()
+    fn get_neighbouring<'a>(&self, map: &'a mut Vec<Coordinate>) -> Vec<&'a mut Coordinate> {
+        map.iter_mut().filter(|c| {
+            self.get_distance(c) == 1 && c.height - self.height <= 1 && !c.visited
+        }).collect::<Vec<&mut Coordinate>>()
     }
-}
-
-fn find_best<'a>(current: &Coordinate, finish: &Coordinate, map: &'a Vec<Vec<Coordinate>>) -> &'a Coordinate {
-    let mut neighbours = current.get_neighbouring(map);
-    neighbours.sort_by(|a, b| a.get_distance(finish).cmp(&b.get_distance(finish)));
-    neighbours[0]
 }
 
 pub fn run() {
     let lines = fs::read_to_string("input/day12in.txt").expect("Failed to read file!");
-    let mut map: Vec<Vec<Coordinate>> = Vec::new();
+    let mut map: Vec<Coordinate> = Vec::new();
     let mut start: Coordinate = Coordinate::default();
     let mut finish: Coordinate = Coordinate::default();
 
     for (i, line) in lines.split('\n').enumerate() {
-        map.push(line.chars().enumerate().map(|(j, c)| {
+        map.extend(line.chars().enumerate().map(|(j, c)| {
             match c {
                 'S' => {
-                    start = Coordinate::new(j as isize, i as isize, ABC.find('a').unwrap());
+                    start = Coordinate::new(j as isize, i as isize, ABC.find('a').unwrap() as isize);
+                    start.distance_from_start = Some(0);
                     start
                 },
                 'E' => {
-                    finish = Coordinate::new(j as isize, i as isize, ABC.find('a').unwrap());
+                    finish = Coordinate::new(j as isize, i as isize, ABC.find('z').unwrap() as isize);
                     finish
                 },
-                x => Coordinate::new(j as isize, i as isize, ABC.find(x).expect("Invalid character found!")),
+                x => Coordinate::new(j as isize, i as isize, ABC.find(x).expect("Invalid character found!") as isize),
             }
-        }).collect());
+        }));
     }
 
-    println!("{:#?}", map);
-    println!("{:?} {:?}", start, finish);
+    //Task 1
+    println!("{}", start.get_path_length(&finish, map.clone()).expect("No path!"));
+
+    // Task 2
+    let starts = map.iter_mut().filter(|c| c.height == 0).map(|c| *c).collect::<Vec<Coordinate>>();
+
+    // Use rayon for multithreading performance gains
+    // Roughly takes ~20 seconds to execute
+    let shortest = starts.par_iter().map(|s| {
+        let mut c = *s;
+        c.distance_from_start = Some(0);
+        c.get_path_length(&finish, map.clone())
+    }).flatten().min().unwrap();
+
+    println!("{}", shortest);
+
 }
