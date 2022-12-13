@@ -1,6 +1,6 @@
 use std::{fs, collections::VecDeque};
 
-fn do_move((amount, from, to): &(usize, usize, usize), cols: &mut Vec<VecDeque<char>>) {
+fn do_move((amount, from, to): &(usize, usize, usize), cols: &mut [VecDeque<char>]) {
     for _ in 0..*amount {
         let item = cols[from-1].pop_front().unwrap();
         cols[to-1].push_front(item);
@@ -8,7 +8,7 @@ fn do_move((amount, from, to): &(usize, usize, usize), cols: &mut Vec<VecDeque<c
     
 }
 
-fn do_multi_move((amount, from, to): &(usize, usize, usize), cols: &mut Vec<VecDeque<char>>) {
+fn do_multi_move((amount, from, to): &(usize, usize, usize), cols: &mut [VecDeque<char>]) {
     let mut buf: Vec<char> = Vec::new();
     for _ in 0..*amount {
         buf.push(cols[from-1].pop_front().unwrap())
@@ -18,7 +18,7 @@ fn do_multi_move((amount, from, to): &(usize, usize, usize), cols: &mut Vec<VecD
     }
 }
 
-fn get_top_boxes(cols: &Vec<VecDeque<char>>) -> String {
+fn get_top_boxes(cols: &[VecDeque<char>]) -> String {
     cols.iter().map(|col| col.front().expect("Empty column detected!")).collect()
 }
 

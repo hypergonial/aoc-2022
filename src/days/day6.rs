@@ -6,8 +6,9 @@ fn find_unique_slice<T: Hash + Eq>(arr: &[T], len: usize) -> Option<usize> {
     let mut index = None;
     'outer: for i in (len-1)..arr.len() {
         let mut buf: HashSet<&T> = HashSet::new();
-        for j in (i-(len-1))..=i {
-            if !buf.insert(&arr[j]) {
+        
+        for item in arr.iter().take(i + 1).skip(i-(len-1)) {
+            if !buf.insert(item) {
                 continue 'outer;
             }
         }

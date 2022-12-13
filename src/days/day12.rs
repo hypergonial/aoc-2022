@@ -59,7 +59,7 @@ impl Coordinate {
     }
 
     /// Get neighbouring valid coordinates, filters out coordinates that are invalid for path.
-    fn get_neighbouring<'a>(&self, map: &'a mut Vec<Coordinate>) -> Vec<&'a mut Coordinate> {
+    fn get_neighbouring<'a>(&self, map: &'a mut [Coordinate]) -> Vec<&'a mut Coordinate> {
         map.iter_mut().filter(|c| {
             self.get_distance(c) == 1 && c.height - self.height <= 1 && !c.visited
         }).collect::<Vec<&mut Coordinate>>()

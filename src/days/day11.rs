@@ -15,7 +15,7 @@ struct Monke {
 
 impl Monke {
     /// Execute all associated logic with the monke.
-    fn throw_stuff_at(&mut self, others: &mut Vec<Monke>, magic_number: isize) {
+    fn throw_stuff_at(&mut self, others: &mut [Monke], magic_number: isize) {
         while let Some(item) = self.items.pop_front() {
             let new = (self.operation)(item) % magic_number;
 
@@ -44,7 +44,7 @@ impl Default for Monke {
 }
 
 /// Iter through all monkes and execute their logic.
-fn perform_turn(monkes: &mut Vec<Monke>, magic_number: isize) {
+fn perform_turn(monkes: &mut [Monke], magic_number: isize) {
     for i in 0..monkes.len() {
         let mut monke = monkes[i].clone();
         monke.throw_stuff_at(monkes, magic_number);

@@ -155,7 +155,6 @@ pub fn run() {
     root.gather_sizes(&mut buf);
 
     println!("{:?}", buf.iter().map(|(_, s)| s).filter(|size| **size <= 100000).sum::<usize>());
-
     let free = 70000000-buf["/"];
-    println!("{:?}", buf.iter().map(|(_, s)| s).filter(|size| free + size.clone() > 30000000).min().unwrap());   
+    println!("{:?}", buf.iter().map(|(_, s)| s).filter(|size| free + **size > 30000000).min().unwrap());   
 }
